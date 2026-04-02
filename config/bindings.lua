@@ -54,7 +54,30 @@ local keys = {
 
    -- tabs --
    -- tabs: spawn+close
-   { key = 't',          mods = mod.SUPER,     action = act.SpawnTab('DefaultDomain') },
+   {
+      key = 't',
+      mods = mod.SUPER,
+      action = wezterm.action_callback(function(window, pane)
+         local mux_window = window:mux_window()
+         local current_tab = window:active_tab()
+         local tabs = mux_window:tabs()
+
+         local current_idx = 0
+         for i, t in ipairs(tabs) do
+            if t:tab_id() == current_tab:tab_id() then
+               current_idx = i - 1
+               break
+            end
+         end
+
+         mux_window:spawn_tab({})
+
+         local moves = #tabs - current_idx - 1
+         for _ = 1, moves do
+            window:perform_action(act.MoveTabRelative(-1), pane)
+         end
+      end),
+   },
    { key = 'w',          mods = mod.SUPER_REV, action = act.CloseCurrentTab({ confirm = false }) },
 
    -- tabs: navigation
