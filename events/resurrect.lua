@@ -27,6 +27,12 @@ M.save_workspace = function(window, pane)
    window:toast_notification('wezterm', 'Workspace saved', nil, 2000)
 end
 
+M.fuzzy_delete = function(window, pane)
+   resurrect.fuzzy_loader.fuzzy_load(window, pane, function(id, _label, _dir)
+      resurrect.state_manager.delete_state(id)
+   end, { title = 'Delete Session State', description = 'Select state to delete:', fuzzy_description = 'Delete: ' })
+end
+
 M.fuzzy_restore = function(window, pane)
    resurrect.fuzzy_loader.fuzzy_load(window, pane, function(id, _label, _dir)
       local state_type = string.match(id, '^([^/]+)')

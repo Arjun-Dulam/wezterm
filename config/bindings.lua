@@ -269,6 +269,12 @@ local key_tables = {
             resurrect.fuzzy_restore(window, pane)
          end),
       },
+      {
+         key = 'd',
+         action = wezterm.action_callback(function(window, pane)
+            resurrect.fuzzy_delete(window, pane)
+         end),
+      },
       { key = 'Escape', action = 'PopKeyTable' },
    },
    resize_font = {
