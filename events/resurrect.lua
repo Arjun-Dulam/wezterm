@@ -8,9 +8,20 @@ local M = {}
 M.setup = function() end
 
 M.save_workspace = function(window, pane)
-   local ws_state = resurrect.workspace_state.get_workspace_state()
-   resurrect.state_manager.save_state(ws_state)
-   window:toast_notification('wezterm', 'Workspace saved', nil, 2000)
+   window:perform_action(
+      wezterm.action.PromptInputLine({
+         description = 'Session name (empty = keep current):',
+         action = wezterm.action_callback(function(w, _p, name)
+            if name and #name > 0 then
+               wezterm.mux.rename_workspace(wezterm.mux.get_active_workspace(), name)
+            end
+            local ws_state = resurrect.workspace_state.get_workspace_state()
+            resurrect.state_manager.save_state(ws_state)
+            w:toast_notification('wezterm', 'Workspace saved', nil, 2000)
+         end),
+      }),
+      pane
+   )
 end
 
 M.fuzzy_delete = function(window, pane)
