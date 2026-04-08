@@ -5,30 +5,34 @@ local resurrect = dofile(plugin_dir .. '/init.lua')
 
 local M = {}
 
+--- Track user-set session names per window (window_id -> name)
+local session_names = {}
+
 M.setup = function() end
 
 M.save_window = function(window, pane)
    local mux_win = window:mux_window()
-   local current_title = mux_win:get_title()
-   local description = 'Session name'
-   if current_title and current_title ~= '' then
-      description = description .. ' [current: ' .. current_title .. '] (empty = keep current)'
-   end
-   description = description .. ':'
+   local win_id = mux_win:window_id()
+   local saved_name = session_names[win_id]
+   local description = saved_name
+      and 'Update session "' .. saved_name .. '" (enter to keep name):'
+      or 'Name this session:'
    window:perform_action(
       wezterm.action.PromptInputLine({
          description = description,
          action = wezterm.action_callback(function(w, _p, name)
             local mw = w:mux_window()
+            local wid = mw:window_id()
             if name and #name > 0 then
-               mw:set_title(name)
-            elseif not mw:get_title() or mw:get_title() == '' then
+               session_names[wid] = name
+            elseif not session_names[wid] then
                w:toast_notification('wezterm', 'Session name required', nil, 2000)
                return
             end
+            mw:set_title(session_names[wid])
             local win_state = resurrect.window_state.get_window_state(mw)
             resurrect.state_manager.save_state(win_state)
-            w:toast_notification('wezterm', 'Session saved', nil, 2000)
+            w:toast_notification('wezterm', 'Session "' .. session_names[wid] .. '" saved', nil, 2000)
          end),
       }),
       pane
