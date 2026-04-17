@@ -1,6 +1,8 @@
 return {
    -- behaviours
    automatically_reload_config = true,
+   send_composed_key_when_left_alt_is_pressed = false,
+   send_composed_key_when_right_alt_is_pressed = false,
    exit_behavior = 'CloseOnCleanExit', -- if the shell program exited with a successful status
    exit_behavior_messaging = 'Verbose',
    status_update_interval = 100,

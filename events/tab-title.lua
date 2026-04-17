@@ -239,6 +239,18 @@ function Tab:update_and_lock_title(title)
    self.title_locked = true
 end
 
+---@param tab_info Tab
+---@param tab_title string?
+local function sync_locked_title(tab_info, tab_title)
+   if not tab_title or tab_title == '' then
+      return
+   end
+
+   if not tab_info.title_locked or tab_info.locked_title ~= tab_title then
+      tab_info:update_and_lock_title(tab_title)
+   end
+end
+
 ---@param event_opts Event.TabTitleOptions
 ---@param is_active boolean
 ---@param hover boolean
@@ -325,6 +337,7 @@ M.setup = function(opts)
       local tab = window:active_tab()
       local id = tab:tab_id()
       tab_list[id].title_locked = false
+      tab_list[id].locked_title = ''
       tab:set_title('')
    end)
 
@@ -332,15 +345,10 @@ M.setup = function(opts)
    wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, hover, max_width)
       if not tab_list[tab.tab_id] then
          tab_list[tab.tab_id] = Tab:new()
-         if tab.tab_title and tab.tab_title ~= '' then
-            tab_list[tab.tab_id]:update_and_lock_title(tab.tab_title)
-         end
-         tab_list[tab.tab_id]:set_info(valid_opts, tab, max_width)
          tab_list[tab.tab_id]:create_cells()
-         tab_list[tab.tab_id]:update_cells(valid_opts, tab.is_active, hover)
-         return tab_list[tab.tab_id]:render()
       end
 
+      sync_locked_title(tab_list[tab.tab_id], tab.tab_title)
       tab_list[tab.tab_id]:set_info(valid_opts, tab, max_width)
       tab_list[tab.tab_id]:update_cells(valid_opts, tab.is_active, hover)
       return tab_list[tab.tab_id]:render()

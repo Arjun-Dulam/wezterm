@@ -48,6 +48,9 @@ local keys = {
    { key = 'LeftArrow',  mods = mod.SUPER,     action = act.SendString '\u{1b}OH' },
    { key = 'RightArrow', mods = mod.SUPER,     action = act.SendString '\u{1b}OF' },
    { key = 'Backspace',  mods = mod.SUPER,     action = act.SendString '\u{15}' },
+   { key = 'LeftArrow',  mods = 'OPT',         action = act.SendString '\u{1b}b' },
+   { key = 'RightArrow', mods = 'OPT',         action = act.SendString '\u{1b}f' },
+   { key = 'Backspace',  mods = 'OPT',         action = act.SendString '\u{1b}\u{7f}' },
 
    -- copy/paste --
    { key = 'c',          mods = mod.SUPER,     action = act.CopyTo('Clipboard') },
